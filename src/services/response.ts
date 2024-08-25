@@ -8,26 +8,26 @@ const eot = Buffer.from("454f54000000", "hex");
 const blankHeader = Buffer.from([0xff, 0xff, 0xff, 0xff]);
 
 const buildGetServersResData = (servers: IServerItem[]) => {
-  const delimiter = Buffer.from("\\", "binary");
-  const commandName = Buffer.from("getserversResponse ");
+    const delimiter = Buffer.from("\\", "binary");
+    const commandName = Buffer.from("getserversResponse ");
 
-  let responseData = Buffer.concat([blankHeader, commandName, delimiter]);
+    let responseData = Buffer.concat([blankHeader, commandName, delimiter]);
 
-  servers.forEach((server) => {
-    const ipBuffer = Buffer.from(server.ipParts);
-    const portBuffer = Buffer.alloc(2);
-    portBuffer.writeUInt16BE(server.port, 0);
-    responseData = Buffer.concat([
-      responseData,
-      ipBuffer,
-      portBuffer,
-      delimiter,
-    ]);
-  });
+    servers.forEach((server) => {
+        const ipBuffer = Buffer.from(server.ipParts);
+        const portBuffer = Buffer.alloc(2);
+        portBuffer.writeUInt16BE(server.port, 0);
+        responseData = Buffer.concat([
+            responseData,
+            ipBuffer,
+            portBuffer,
+            Buffer.from([0x00]),
+            delimiter,
+        ]);
+    });
 
-  responseData = Buffer.concat([responseData, eot]);
-
-  return responseData;
+    responseData = Buffer.concat([responseData, eot]);
+    return responseData;
 };
 
 export const sendResponse = (
